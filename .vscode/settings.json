@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "ITU-CS-464-ASSIGNMENT-03-BSSE23036.slnx"
+    "dotnet.defaultSolution": "CS464-A4-BSSE23036.slnx"
 }
