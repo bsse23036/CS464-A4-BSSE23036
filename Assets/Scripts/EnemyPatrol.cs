@@ -185,7 +185,7 @@ public class EnemyPatrol : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.ReloadCurrentLevel();
+            GameManager.Instance.PlayerDied();
         }
     }
 

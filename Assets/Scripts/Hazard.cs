@@ -36,7 +36,7 @@ public class Hazard : MonoBehaviour
         else if (GameManager.Instance != null)
         {
             // Fallback safety if the Health component is missing from the Player
-            GameManager.Instance.ReloadCurrentLevel();
+            GameManager.Instance.PlayerDied();
         }
     }
 }

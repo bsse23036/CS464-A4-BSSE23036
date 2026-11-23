@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Score & Level Settings")]
+    public int startingLives = 3;
     public int coinsCollected = 0;
     public bool useTimer = true;
     public float levelTimer = 60f;
@@ -13,61 +14,53 @@ public class GameManager : MonoBehaviour
     [Header("Runtime Status")]
     [SerializeField] private float currentTimer;
 
-    private bool isGameOver = false;
+    public static int currentLives = -1;
+    private bool isLevelEnded = false;
 
     void Awake()
     {
-        if (Instance == null)
+        Instance = this;
+        currentTimer = levelTimer;
+
+        if (currentLives < 0)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            currentTimer = levelTimer; // Explicit initialization on start
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
+            currentLives = startingLives;
         }
     }
 
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void Start()
     {
         ResetLevelState();
+    }
+
+    public static void ResetLives(int defaultLives = 3)
+    {
+        currentLives = defaultLives;
     }
 
     private void ResetLevelState()
     {
         coinsCollected = 0;
         currentTimer = levelTimer;
-        isGameOver = false;
+        isLevelEnded = false;
         UpdateUI();
     }
 
     void Update()
     {
-        if (useTimer && !isGameOver)
+        if (!useTimer || isLevelEnded || PauseMenu.IsPaused) return;
+
+        currentTimer -= Time.deltaTime;
+
+        if (UIManager.Instance != null)
         {
-            currentTimer -= Time.deltaTime;
+            UIManager.Instance.UpdateTimerDisplay(currentTimer);
+        }
 
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.UpdateTimerDisplay(currentTimer);
-            }
-
-            if (currentTimer <= 0f)
-            {
-                currentTimer = 0f;
-                PlayerDied();
-            }
+        if (currentTimer <= 0f)
+        {
+            currentTimer = 0f;
+            PlayerDied();
         }
     }
 
@@ -83,6 +76,7 @@ public class GameManager : MonoBehaviour
         {
             UIManager.Instance.UpdateCoinsDisplay(coinsCollected);
             UIManager.Instance.UpdateTimerDisplay(currentTimer);
+            UIManager.Instance.UpdateLivesDisplay(currentLives);
 
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
@@ -90,6 +84,8 @@ public class GameManager : MonoBehaviour
                 Health playerHealth = player.GetComponent<Health>();
                 if (playerHealth != null)
                 {
+                    if (UIManager.Instance.healthBar != null)
+                        UIManager.Instance.healthBar.Set(playerHealth.Current, playerHealth.maxHealth);
                     UIManager.Instance.UpdateHealthDisplay(playerHealth.Current);
                 }
             }
@@ -98,29 +94,47 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDied()
     {
-        if (isGameOver) return;
-        isGameOver = true;
-        Debug.Log("Player Died or Time Ran Out! Reloading scene...");
-        ReloadCurrentLevel();
+        if (isLevelEnded) return;
+        isLevelEnded = true;
+
+        currentLives--;
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateLivesDisplay(currentLives);
+        }
+
+        if (currentLives > 0)
+        {
+            // Still have lives left: reload the current level automatically
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        else
+        {
+            // Out of lives: show the Game Over screen
+            currentLives = 0;
+            PauseMenu pauseMenu = FindFirstObjectByType<PauseMenu>();
+            if (pauseMenu != null)
+            {
+                pauseMenu.ShowGameOver();
+            }
+        }
     }
 
     public void ReloadCurrentLevel()
     {
-        ResetLevelState();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        PlayerDied();
     }
 
-    public void LoadNextLevel()
+    public void LevelWon()
     {
-        ResetLevelState();
-        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+        if (isLevelEnded) return;
+        isLevelEnded = true;
+
+        PauseMenu pauseMenu = FindFirstObjectByType<PauseMenu>();
+        if (pauseMenu != null)
         {
-            SceneManager.LoadScene(nextSceneIndex);
-        }
-        else
-        {
-            Debug.Log("All levels completed!");
+            pauseMenu.ShowWinScreen();
         }
     }
 }

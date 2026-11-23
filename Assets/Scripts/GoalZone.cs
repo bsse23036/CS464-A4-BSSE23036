@@ -8,7 +8,7 @@ public class GoalZone : MonoBehaviour
         {
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.LoadNextLevel();
+                GameManager.Instance.LevelWon();
             }
             else
             {

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Health : MonoBehaviour
@@ -7,6 +8,8 @@ public class Health : MonoBehaviour
     public bool shielded = false;
     [SerializeField] private float iFrameDuration = 1.0f;
     [SerializeField] private float defaultKnockbackForce = 10f;
+
+    public event Action<int, int> Damaged;
 
     private float invincibleUntil;
     private Rigidbody rb;
@@ -19,13 +22,11 @@ public class Health : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    // Overload allowing default damage without knockback position if needed
     public void TakeDamage(int damage)
     {
         TakeDamage(damage, transform.position - transform.forward, defaultKnockbackForce);
     }
 
-    // Main damage method accepting source position for knockback calculations
     public void TakeDamage(int damage, Vector3 damageSourcePosition, float force = 10f)
     {
         if (Time.time < invincibleUntil) return;
@@ -39,22 +40,22 @@ public class Health : MonoBehaviour
             return;
         }
 
-        currentHealth -= damage;
+        currentHealth = Mathf.Max(0, currentHealth - damage);
         invincibleUntil = Time.time + iFrameDuration;
 
         ApplyKnockback(damageSourcePosition, force);
+
+        // Notify all listeners (HealthBar, Hit SFX, Hit Sparks)
+        Damaged?.Invoke(currentHealth, maxHealth);
 
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UpdateUI();
         }
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && GameManager.Instance != null)
         {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.PlayerDied();
-            }
+            GameManager.Instance.PlayerDied();
         }
     }
 
@@ -62,16 +63,13 @@ public class Health : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Calculate direction pointing away from damage source
-        Vector3 knockbackDir = (transform.position - sourcePosition);
-        knockbackDir.y = 0; // Flatten XZ direction vector
+        Vector3 knockbackDir = transform.position - sourcePosition;
+        knockbackDir.y = 0;
         knockbackDir = knockbackDir.normalized;
 
-        // Add slight upward lift (0.4) to break ground friction during impulse
         knockbackDir.y = 0.4f;
         knockbackDir.Normalize();
 
-        // Zero out current velocity so falling/moving momentum doesn't dampen impulse force
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(knockbackDir * force, ForceMode.Impulse);
     }
@@ -80,5 +78,6 @@ public class Health : MonoBehaviour
     {
         currentHealth = maxHealth;
         invincibleUntil = Time.time + invincibilityTime;
+        Damaged?.Invoke(currentHealth, maxHealth);
     }
 }

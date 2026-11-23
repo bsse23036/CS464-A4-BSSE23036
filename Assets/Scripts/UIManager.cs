@@ -5,10 +5,14 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [Header("TextMeshPro References")]
+    [Header("HUD Components")]
+    public HealthBar healthBar;
     public TextMeshProUGUI coinsText;
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI timerText;
+    public TextMeshProUGUI livesText;
+
+    private Health playerHealth;
 
     void Awake()
     {
@@ -16,10 +20,41 @@ public class UIManager : MonoBehaviour
         {
             Instance = this;
         }
-        else
+        else if (Instance != this)
         {
             Destroy(gameObject);
         }
+    }
+
+    void OnEnable()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerHealth = player.GetComponent<Health>();
+            if (playerHealth != null)
+            {
+                playerHealth.Damaged += OnPlayerDamaged;
+                OnPlayerDamaged(playerHealth.Current, playerHealth.maxHealth);
+            }
+        }
+    }
+
+    void OnDisable()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.Damaged -= OnPlayerDamaged;
+        }
+    }
+
+    private void OnPlayerDamaged(int current, int max)
+    {
+        if (healthBar != null)
+        {
+            healthBar.Set(current, max);
+        }
+        UpdateHealthDisplay(current);
     }
 
     public void UpdateCoinsDisplay(int coinCount)
@@ -36,7 +71,7 @@ public class UIManager : MonoBehaviour
             {
                 heartsDisplay += "♥ ";
             }
-            healthText.text = "Health: " + heartsDisplay;
+            healthText.text = "Health: " + heartsDisplay.TrimEnd();
         }
     }
 
@@ -46,6 +81,14 @@ public class UIManager : MonoBehaviour
         {
             int seconds = Mathf.CeilToInt(timeRemaining);
             timerText.text = "Time: " + seconds + "s";
+        }
+    }
+
+    public void UpdateLivesDisplay(int lives)
+    {
+        if (livesText != null)
+        {
+            livesText.text = "Lives: " + Mathf.Max(0, lives);
         }
     }
 }
