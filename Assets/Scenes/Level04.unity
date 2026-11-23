@@ -10115,6 +10115,63 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1001 &1324724376
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.9631
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.60942
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2184787104722824474, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7452171015484539445, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
+      propertyPath: m_Name
+      value: SfxPlayer
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f87a6dd16e7438f49ab5b83f541b6e5c, type: 3}
 --- !u!43 &1331425264
 Mesh:
   m_ObjectHideFlags: 0
@@ -14735,6 +14792,7 @@ GameObject:
   - component: {fileID: 1799864739}
   - component: {fileID: 1799864738}
   - component: {fileID: 1799864741}
+  - component: {fileID: 1799864743}
   - component: {fileID: 1799864742}
   m_Layer: 0
   m_Name: Camera_4
@@ -14870,7 +14928,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1799864737}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bae1695782a9082499bfaa1ef735f7cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f4523d9aaa9d4d41b3937917af8ceb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 1575188215}
@@ -14880,6 +14938,20 @@ MonoBehaviour:
   ySpeed: 80
   yMinLimit: -10
   yMaxLimit: 80
+--- !u!114 &1799864743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799864737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c089aed27848ce141986c3729664424f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraShakeListener
+  shakeDuration: 0.2
+  shakeMagnitude: 0.18
 --- !u!43 &1811389437
 Mesh:
   m_ObjectHideFlags: 0
@@ -18596,3 +18668,4 @@ SceneRoots:
   - {fileID: 1795287302}
   - {fileID: 1876366447}
   - {fileID: 386824515}
+  - {fileID: 1324724376}

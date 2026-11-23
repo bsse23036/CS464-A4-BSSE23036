@@ -10,7 +10,11 @@ public class Coin : MonoBehaviour
     public float bobSpeed = 2f;
     public float bobHeight = 0.15f;
 
+    [Header("Audio & Visual Feedback")]
+    [SerializeField] private GameObject pickupEffectPrefab;
+
     private Vector3 startPosition;
+    private bool isCollected = false;
 
     void Start()
     {
@@ -32,11 +36,26 @@ public class Coin : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (isCollected) return;
+
+        // Check both the collider and its parent in case the Player has child colliders
+        if (other.CompareTag("Player") || (other.transform.parent != null && other.transform.parent.CompareTag("Player")))
         {
+            isCollected = true;
+
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.AddCoin();
+            }
+
+            if (SfxPlayer.Instance != null)
+            {
+                SfxPlayer.Instance.PlayPickup();
+            }
+
+            if (pickupEffectPrefab != null)
+            {
+                Instantiate(pickupEffectPrefab, transform.position, Quaternion.identity);
             }
 
             Destroy(gameObject);

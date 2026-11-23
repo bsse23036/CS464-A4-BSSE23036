@@ -132,6 +132,7 @@ MonoBehaviour:
   enableBobbing: 1
   bobSpeed: 2
   bobHeight: 0.5
+  pickupEffectPrefab: {fileID: 350131032070239405, guid: 3cfa5327bf77fe149b2b6c270120f03e, type: 3}
 --- !u!1 &7348657350056440889
 GameObject:
   m_ObjectHideFlags: 0
