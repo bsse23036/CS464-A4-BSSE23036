@@ -75,20 +75,26 @@ public class PauseMenu : MonoBehaviour
             GameManager.ResetLives();
         }
         Resume();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        if (LevelLoader.Instance != null) LevelLoader.Instance.ReloadCurrent();
+        else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void NextLevel()
     {
         Resume();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
 
+        if (LevelLoader.Instance != null) LevelLoader.Instance.LoadNextLevel();
+        else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+    
     public void QuitToMenu()
     {
         GameManager.ResetLives();
         Resume();
-        SceneManager.LoadScene(0);
+
+        if (LevelLoader.Instance != null) LevelLoader.Instance.LoadMainMenu();
+        else SceneManager.LoadScene(0);
     }
 
     private void SelectButton(GameObject button)

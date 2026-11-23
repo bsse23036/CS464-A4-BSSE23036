@@ -131,6 +131,20 @@ public class GameManager : MonoBehaviour
         if (isLevelEnded) return;
         isLevelEnded = true;
 
+        int currentIndex = SceneManager.GetActiveScene().buildIndex;
+        float clearTime = Mathf.Max(0.1f, levelTimer - currentTimer);
+
+        SaveData.RecordBestTime(currentIndex, clearTime);
+        if (currentIndex >= 1 && currentIndex < 5)
+        {
+            SaveData.UnlockLevel(currentIndex + 1);
+        }
+
+        if (SfxPlayer.Instance != null)
+        {
+            SfxPlayer.Instance.PlayWin();
+        }
+
         PauseMenu pauseMenu = FindFirstObjectByType<PauseMenu>();
         if (pauseMenu != null)
         {
