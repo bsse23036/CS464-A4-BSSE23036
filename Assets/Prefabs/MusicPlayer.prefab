@@ -48,7 +48,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -142,5 +142,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67da86dd661378f479d7173bfa509baa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicPlayer
-  backgroundMusic: {fileID: 0}
-  musicMixerGroup: {fileID: 0}
+  backgroundMusic: {fileID: 8300000, guid: a31232ac1a233904aa3700a50f141233, type: 3}
+  musicMixerGroup: {fileID: -3594696905037192305, guid: 5970654c26c751e4993c849276a0b35d, type: 2}

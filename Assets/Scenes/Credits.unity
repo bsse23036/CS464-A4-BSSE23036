@@ -660,8 +660,8 @@ MonoBehaviour:
   m_text: "Game Design & Programming\r\nYour Name (BSSE23036) \u2014 CS464 Game Development\r\n\r\nEngine
     & Tools\r\nUnity 6.3 | TextMeshPro | Unity Audio Mixer\r\n\r\nSound Effects\r\nKenney
     (https://kenney.nl/assets)\r\nDigital Audio, Interface Sounds, Sci-Fi Sounds
-    & Impact Sounds \u2014 CC0 1.0 Public Domain\r\n\r\nBackground Music\r\n[Track
-    Title] by [Artist Name] ([Source URL]) \u2014 [License, e.g. CC0 / CC-BY 4.0]"
+    & Impact Sounds\r\n\r\nBackground Music\nOpenGameArt (https://opengameart.org)\r\nBasic
+    Platformer music by Vircon32"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

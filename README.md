@@ -1,41 +1,48 @@
-# CS464 Assignment 03 - Mustafa Fawwaz - BSSE23036
+# CS464 Assignment 04 - Mustafa Fawwaz - BSSE23036
 
-- **Video Link:** https://drive.google.com/file/d/1wccR-28FIr86tzeoPV45t4xS57vvGoUB/view?usp=sharing
-- **Started from:** https://github.com/bsse23036/ITU-CS-464-ASSIGNMENT-02-BSSE23036.git
-- **Controls:** WASD for camera-relative movement, Mouse to orbit camera, Spacebar for variable jump (with Coyote Time and Jump Buffering), Esc to toggle cursor lock
-- **To win a level:** Reach the green `GoalZone` portal before the timer expires
+**Video Link:** https://drive.google.com/file/d/1oYE4T3Ld_Y9VlR2lq3Y_-HLrUyMabvei/view?usp=sharing
 
-## Levels
+<p>
+<img src="Docs/HUD_16x9.png" width="320" alt="The HUD at 16:9">
+<img src="Docs/HUD_4x3.png" width="240" alt="The HUD at 4:3">
+<img src="Docs/HUD_16x9_grayscale.png" width="320" alt="The HUD at 16:9 in grayscale">
+<img src="Docs/HUD_4x3_grayscale.png" width="240" alt="The HUD at 4:3 in grayscale">
+</p>
 
-| Level | Screenshot | New idea | Combined with | 
-| ----- | ----- | ----- | ----- | 
-| Level01 | ![Level 01](Docs/levels/level01.png) | Introduction to camera-relative WASD platforming, coin collection, and basic guard line-of-sight detection. | Stepping platform elevation leading directly to the exit portal. | 
-| Level02 | ![Level 02](Docs/levels/level02.png) | Vertical stair ascensions with dynamic timed spike hazard arrays. | Guard patrol loops guarding mid-level platform coin clusters. | 
-| Level03 | ![Level 03](Docs/levels/level03.png) | Diverging 3-lane route: Central high-risk spike bridge vs. Left/Right stealth cover arenas. | Solid wall occlusion breaking multiple guard vision cones. | 
-| Level04 | ![Level 04](Docs/levels/level04.png) | Power-Up spawn room, tight spatial pinch hazard corridor, and high-density multi-guard courtyard. | Timed Shield/Invincibility buff combined with aggressive guard chase mechanics ($5.5\text{m/s}$). | 
-| Level05 | ![Level 05](Docs/levels/level05.png) | Multi-stage ascending arenas with jump pads, overlapping guard vision networks, and hazard fields. | Level-wide bottom `KillZone`, strict countdown timer, and full integration of all mechanics. | 
+## Settings
 
-## The numbers
+| Part | Setting | Value | Why |
+|---|---|---|---|
+| A | Harmony - base hue | Split-Complementary - `196°` (Teal-Emerald) | Separates cool HUD panels from warm amber buttons and crimson hazard/lag cues across varied level geometry. |
+| A | Dark - mid - light | `#121A1D` - `#2ECC71` - `#F0F5F7` | Deep slate panel backing (`#121A1D`) anchors bright emerald health (`#2ECC71`) and crisp off-white text (`#F0F5F7`). |
+| A | Accents | `#F39C12` - `#A3E4D7` | Warm amber (`#F39C12`) highlights interactive buttons; mint (`#A3E4D7`) marks active keyboard selection focus. |
+| A | HUD text (`#F0F5F7`) on HUD panel (`#121A1D`) | `16.1 : 1` | Exceeds WCAG AAA (`>= 4.5:1`) for small timer, coin, heart, and lives readouts. |
+| A | Button label (`#121A1D`) on Action button (`#F39C12`) | `7.8 : 1` | Exceeds WCAG AAA (`>= 4.5:1`) and stays distinct in grayscale. |
+| B | Music - SFX groups, as mixed | `-4.0 dB` - `0.0 dB` | Keeps looping background music slightly underneath combat, pickup, and UI feedback cues. |
+| B | Slider at 1 - 0.5 - 0.0001 | `0.0 dB` - `-6.0 dB` - `-80.0 dB` | Logarithmic conversion (`Mathf.Log10(v) * 20f`) maps linear slider travel to perceptual decibels without `log(0)` errors. |
+| C | Enemy patrol hum (`engineCircular_000`), in `Level01`–`Level05` | `Logarithmic` - Min `2m` - Max `18m` | Models realistic distance falloff and subtle Doppler shift as guards patrol near or away from the player. |
+| C | Goal / hazard beacon (`forceField_000`), in `Level01`–`Level05` | `Linear` - Min `1.5m` - Max `15m` | Provides a predictable spatial audio landmark that cuts off cleanly outside the beacon's `15m` radius. |
+| C | AudioListener | On the player (`ListenerOnPlayer.cs`) | Ensures stereo panning and 3D attenuation match the character's position rather than the orbiting camera. |
+| D | `UnlockedLevel` | `int` - default `1` | Keeps `Level01` playable on a fresh save while locking `Level02`–`Level05` until earned. |
+| D | `BestTime_Level_1` … `BestTime_Level_5` | `float` - default `-1f` (`< 0f` check) | Distinguishes unplayed levels (`Best: --`) from valid clear times (`Best: XX.Xs`) before overwriting records. |
+| D | `MusicVolume` | `float` - default `1` | Restores full normalized music volume (`0 dB`) on first launch before the player adjusts the slider. |
 
-| Number | Value | Why this value |
-|---|---|---|
-| Patrol speed | `3.5 m/s` | Slower than the player's movement speed (`5.5 m/s`), establishing a predictable rhythm for players to observe and plan stealth routes. |
-| Chase range | `10.0 m` | Broad enough to detect players crossing open platforms, but restricted by field-of-view ($70^\circ$) and obstacle line-of-sight raycasting. |
-| Knockback | `10.0` (`ForceMode.Impulse`) | Applies an instant velocity impulse that pushes the player clear of hazards by approximately $2.5\text{m}$ without launching them out of bounds. |
-| I-frames | `1.0 s` | Provides enough time for the player to recover and move away from multi-hit hazards or enemies without stacking damage repeatedly. |
-| Power-up duration | `5.0 s` | Long enough to clear a tight spatial pinch or hazard corridor, but not long enough to trivialize an entire level without precise timing. |
+## Answers
 
-## Short answers
+1. **What `Time.timeScale = 0` stops in my game, and what it doesn't:**  
+   Setting `Time.timeScale = 0` freezes `Time.deltaTime`-scaled movement/timers, `FixedUpdate()` Rigidbody physics, and standard `WaitForSeconds` coroutines. It does **not** stop `Update()` input polling (allowing `Esc` to unpause), `Time.unscaledDeltaTime` (used by `LevelLoader` fade transitions), UI `EventSystem` navigation, or `AudioSource` playback—which is why `PauseMenu` explicitly toggles `AudioListener.pause = true`.
 
-**1. Why does a trigger need a Rigidbody on at least one of the two objects?**
-Unity's physics engine optimizes collision testing by ignoring static-to-static overlaps. For Unity to trigger `OnTriggerEnter`, `OnTriggerStay`, or `OnTriggerExit` callbacks, at least one of the participating GameObjects must have an active `Rigidbody` component (kinematic or dynamic) so the broadphase collision system registers moving trigger events.
+2. **What survives a LoadScene in my game, and how:**  
+   `SfxPlayer`, `MusicPlayer`, and `LevelLoader` survive scene loads via `DontDestroyOnLoad(gameObject)` paired with a singleton `Instance` check that destroys duplicates when re-entering scenes that also hold those prefabs. In addition, `GameManager.currentLives` persists across automatic death restarts as a `static` field, and `SaveData` (`UnlockedLevel`, `BestTime_Level_1`–`5`, and `MusicVolume`) persists across sessions on disk via `PlayerPrefs`.
 
-**2. Which ForceMode do your knockback and your Part A force use, and why each?**
-* **Part A Force (JumpPad / Launch Pad):** Uses `ForceMode.Impulse`. It applies an instantaneous mass-dependent force ideal for launching the player upward or across gaps in a single frame without waiting for continuous acceleration over time.
-* **Knockback:** Uses `ForceMode.Impulse` after explicitly zeroing out `rb.linearVelocity`. This ensures an immediate, consistent impulse displacement away from the hazard regardless of the player's prior speed or direction.
+3. **Why every PlayerPrefs read in my game has a default:**  
+   On a first launch or immediately after clicking **Reset Progress**, none of the keys exist in `PlayerPrefs`. Supplying explicit defaults (`1` for `UnlockedLevel`, `-1f` for best times, and `1f` for `MusicVolume`) prevents zero-initialized fallback bugs—such as locking `Level01`, treating `0.0s` as an unbeatable best time, or starting the music slider at `-80 dB` (silent).
 
-**3. What does your code do when a second power-up is picked up while one is running?**
-When a second power-up of the same type is collected while an effect is active, the system refreshes the duration timer back to its maximum value (`invincibilityDuration` or `shielded = true`), extending the protection window without stacking multi-buff multipliers or creating duplicate coroutines.
+4. **An exception a forgotten unsubscribe would throw, and why mine can't:**  
+   A forgotten unsubscribe throws a `MissingReferenceException` (*"The object of type '...' has been destroyed but you are still trying to access it"*) if `Health.Damaged` fires after a level reload or object destruction and attempts to invoke a destroyed listener. Mine cannot throw this exception because every listener (`UIManager`, `HitFeedbackListener`, and `CameraShakeListener`) subscribes with `+=` in `OnEnable()` and symmetrically unsubscribes with `-=` in `OnDisable()`.
 
-**4. Why can `==` fail as an arrival check, and when does it work?**
-Floating-point calculations in Unity (`float`) introduce small precision rounding errors during frame movement (`Time.deltaTime`). Direct equality (`transform.position == targetPosition`) almost always fails because an object moving at fixed speeds will overshoot the exact coordinates (e.g., stopping at $5.000002$ instead of $5.0$). It only works when positions are strictly discrete integers or snapped on grid axes. Therefore, arrival checks should use distance thresholds like `Vector3.Distance(a, b) < threshold` or `(target - current).sqrMagnitude < threshold`.
+## Credits
+
+- **Sound Effects (`Digital Audio`, `Interface Sounds`, `Sci-Fi Sounds`, `Impact Sounds`)** - Kenney - https://kenney.nl/assets - CC0 1.0 (Public Domain)
+- **Basic Platformer music** - Vircon32 (Carra), composed by Sebastian F. (`@fraynvgm`) - https://opengameart.org - CC-BY 4.0
+- **Liberation Sans SDF (TextMeshPro Default Font)** - Unity Technologies / Red Hat - https://unity.com - SIL Open Font License 1.1
