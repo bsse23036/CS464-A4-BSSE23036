@@ -24,13 +24,23 @@ public class CameraFollow : MonoBehaviour
         x = angles.y;
         y = angles.x;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (!PauseMenu.IsPaused)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if (target == null || PauseMenu.IsPaused || Time.timeScale == 0f) return;
+
+        // Re-lock cursor if clicked during active gameplay (e.g., after clicking Game view in Editor)
+        if (Input.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
         x += Input.GetAxis("Mouse X") * xSpeed * 0.02f;
         y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;

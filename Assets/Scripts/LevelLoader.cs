@@ -6,6 +6,7 @@ public class LevelLoader : MonoBehaviour
 {
     public static LevelLoader Instance { get; private set; }
 
+    [Header("Fade Overlay")]
     [SerializeField] private CanvasGroup fadeCanvasGroup;
     [SerializeField] private float fadeDuration = 0.35f;
 

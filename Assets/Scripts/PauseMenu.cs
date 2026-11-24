@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
@@ -16,12 +18,16 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject gameOverFirstButton;
     [SerializeField] private GameObject winFirstButton;
 
+    private GameObject currentDefaultButton;
+
     private void Awake()
     {
         IsPaused = false;
         if (pausePanel != null) pausePanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(false);
+
+        EnsureEventSystemExists();
     }
 
     private void Update()
@@ -35,37 +41,100 @@ public class PauseMenu : MonoBehaviour
             if (IsPaused) Resume();
             else Pause();
         }
+
+        // Restore keyboard focus if clicking empty space cleared selection while a menu is open
+        if (IsPaused && EventSystem.current != null &&
+            EventSystem.current.currentSelectedGameObject == null &&
+            currentDefaultButton != null)
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
+                Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) ||
+                Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||
+                Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D))
+            {
+                EventSystem.current.SetSelectedGameObject(currentDefaultButton);
+            }
+        }
     }
 
     public void Pause()
     {
-        IsPaused = true;
-        Time.timeScale = 0f;
-        AudioListener.pause = true;
-        if (pausePanel != null) pausePanel.SetActive(true);
-        SelectButton(pauseFirstButton);
+        OpenMenuState(pausePanel, pauseFirstButton, pauseAudio: true);
     }
 
     public void Resume()
     {
+        ResetMenuState();
+        LockCursor();
+    }
+
+    private void ResetMenuState()
+    {
         IsPaused = false;
+        currentDefaultButton = null;
         Time.timeScale = 1f;
         AudioListener.pause = false;
+
         if (pausePanel != null) pausePanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
     }
 
     public void ShowGameOver()
     {
-        Time.timeScale = 0f;
-        if (gameOverPanel != null) gameOverPanel.SetActive(true);
-        SelectButton(gameOverFirstButton);
+        OpenMenuState(gameOverPanel, gameOverFirstButton, pauseAudio: false);
     }
 
     public void ShowWinScreen()
     {
+        OpenMenuState(winPanel, winFirstButton, pauseAudio: false);
+    }
+
+    private void OpenMenuState(GameObject panel, GameObject firstButton, bool pauseAudio)
+    {
+        IsPaused = true;
+        currentDefaultButton = firstButton;
         Time.timeScale = 0f;
-        if (winPanel != null) winPanel.SetActive(true);
-        SelectButton(winFirstButton);
+        if (pauseAudio) AudioListener.pause = true;
+
+        UnlockCursor();
+
+        if (panel != null) panel.SetActive(true);
+        StartCoroutine(SelectButtonNextFrame(firstButton));
+    }
+
+    private IEnumerator SelectButtonNextFrame(GameObject button)
+    {
+        yield return null; // Wait 1 unscaled frame so newly activated UI Buttons register
+
+        EnsureEventSystemExists();
+        if (EventSystem.current != null && button != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(button);
+        }
+    }
+
+    private void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void EnsureEventSystemExists()
+    {
+        if (EventSystem.current == null && FindFirstObjectByType<EventSystem>() == null)
+        {
+            GameObject es = new GameObject("EventSystem");
+            es.AddComponent<EventSystem>();
+            es.AddComponent<InputSystemUIInputModule>();
+        }
     }
 
     public void Restart()
@@ -87,22 +156,14 @@ public class PauseMenu : MonoBehaviour
         if (LevelLoader.Instance != null) LevelLoader.Instance.LoadNextLevel();
         else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
-    
+
     public void QuitToMenu()
     {
         GameManager.ResetLives();
-        Resume();
+        ResetMenuState();
+        UnlockCursor();
 
         if (LevelLoader.Instance != null) LevelLoader.Instance.LoadMainMenu();
         else SceneManager.LoadScene(0);
-    }
-
-    private void SelectButton(GameObject button)
-    {
-        if (EventSystem.current != null && button != null)
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(button);
-        }
     }
 }
