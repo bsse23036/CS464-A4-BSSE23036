@@ -1,19 +1,19 @@
 # CS464 Assignment 04 - Mustafa Fawwaz - BSSE23036
 
-**Video Link:** https://drive.google.com/file/d/1oYE4T3Ld_Y9VlR2lq3Y_-HLrUyMabvei/view?usp=sharing
+**Video Link:** https://drive.google.com/file/d/1DGmvoAFLUfPgZ7F4WRnxVEEqLKfVXA13/view?usp=sharing
 
 <p>
 <img src="Docs/HUD_16x9.png" width="320" alt="The HUD at 16:9">
 <img src="Docs/HUD_4x3.png" width="240" alt="The HUD at 4:3">
-<img src="Docs/HUD_16x9_grayscale.png" width="320" alt="The HUD at 16:9 in grayscale">
-<img src="Docs/HUD_4x3_grayscale.png" width="240" alt="The HUD at 4:3 in grayscale">
+<img src="Docs/HUD_16x9_Grayscale.png" width="320" alt="The HUD at 16:9 in grayscale">
+<img src="Docs/HUD_4x3_Grayscale.png" width="240" alt="The HUD at 4:3 in grayscale">
 </p>
 
 ## Settings
 
 | Part | Setting | Value | Why |
 |---|---|---|---|
-| A | Harmony - base hue | Split-Complementary - `196°` (Teal-Emerald) | Separates cool HUD panels from warm amber buttons and crimson hazard/lag cues across varied level geometry. |
+| A | Harmony - base hue | Split-Complementary - `196°`| Separates cool HUD panels from warm amber buttons and crimson hazard/lag cues across varied level geometry. |
 | A | Dark - mid - light | `#121A1D` - `#2ECC71` - `#F0F5F7` | Deep slate panel backing (`#121A1D`) anchors bright emerald health (`#2ECC71`) and crisp off-white text (`#F0F5F7`). |
 | A | Accents | `#F39C12` - `#A3E4D7` | Warm amber (`#F39C12`) highlights interactive buttons; mint (`#A3E4D7`) marks active keyboard selection focus. |
 | A | HUD text (`#F0F5F7`) on HUD panel (`#121A1D`) | `16.1 : 1` | Exceeds WCAG AAA (`>= 4.5:1`) for small timer, coin, heart, and lives readouts. |
